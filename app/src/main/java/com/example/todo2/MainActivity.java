@@ -12,11 +12,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.http.Query;
 
 import java.util.List;
 
@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private JsonPlaceholderApi jsonPlaceholderApi;
     private LinearLayout layout;
-    private AlertDialog dialog;
+    private AlertDialog addDialog;
+    private AlertDialog editDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +38,20 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = ApiClient.getClient();
         jsonPlaceholderApi = retrofit.create(JsonPlaceholderApi.class);
 
-        buildDialog();
+        buildAddDialog();
+        buildEditDialog();
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
+                addDialog.show();
             }
         });
 
-        fetchTodos(5, 0 ); // Fetch existing todos
+        fetchTodos(5, 0); // Fetch existing todos
     }
 
-    private void buildDialog() {
+    private void buildAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dailog, null);
 
@@ -69,22 +71,22 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-        dialog = builder.create();
+
+        addDialog = builder.create();
     }
 
-    private void buildEditDialog(final int todoId, String currentTitle) {
+    private void buildEditDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dailog, null);
 
         final EditText name = view.findViewById(R.id.nameEdit);
-        name.setText(currentTitle); // Pre-fill with current title
 
         builder.setView(view);
         builder.setTitle("Edit Your Task");
         builder.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        updateTodo(todoId, name.getText().toString());
+                        // Placeholder: Use a method to handle the update logic here
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -94,11 +96,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        dialog = builder.create();
+        editDialog = builder.create();
     }
 
-
-    private void addCard(final int id,String name) {
+    private void addCard(final int id, String name) {
         final View view = getLayoutInflater().inflate(R.layout.card, null);
 
         TextView nameView = view.findViewById(R.id.name);
@@ -114,14 +115,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        edit.setOnClickListener(new View.OnClickListener(){
+        edit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                buildEditDialog(id,name); // pass ID and current title
-                dialog.show();
+            public void onClick(View v) {
+                showEditDialog(id, name); // Pass ID and current title
             }
         });
+
         layout.addView(view);
+    }
+
+    private void showEditDialog(final int id, String currentTitle) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dailog, null);
+
+        final EditText nameEditText = view.findViewById(R.id.nameEdit);
+        nameEditText.setText(currentTitle); // Pre-fill with current title
+
+        builder.setView(view);
+        builder.setTitle("Edit Your Task");
+        builder.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateTodo(id, nameEditText.getText().toString());
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        AlertDialog editDialog = builder.create();
+        editDialog.show();
     }
 
     private void updateTodo(int id, String newTitle) {
@@ -149,9 +176,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void fetchTodos(int limit, int offset) {
-        Call<List<Todo>> call = jsonPlaceholderApi.getTodos(limit,offset);
+        Call<List<Todo>> call = jsonPlaceholderApi.getTodos(limit, offset);
         call.enqueue(new Callback<List<Todo>>() {
             @Override
             public void onResponse(Call<List<Todo>> call, Response<List<Todo>> response) {
@@ -162,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
                 List<Todo> todos = response.body();
                 for (Todo todo : todos) {
-                    addCard(todo.getId(),todo.getTitle());
+                    addCard(todo.getId(), todo.getTitle());
                 }
                 Log.d("MainActivity", "Fetched todos successfully");
             }
@@ -190,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Todo todo = response.body();
-                addCard(todo.getId(),todo.getTitle());
+                addCard(todo.getId(), todo.getTitle());
                 Log.d("MainActivity", "Created todo successfully: " + todo.getTitle());
             }
 
