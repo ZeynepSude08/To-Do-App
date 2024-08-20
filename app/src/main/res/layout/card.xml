@@ -36,6 +36,12 @@
                 android:text="Delete"
                 android:layout_alignParentRight="true"/>
 
+                <CheckBox
+                    android:id="@+id/task_completed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Completed"/>
+
                 <Button
                     android:id="@+id/edit"
                     android:layout_width="wrap_content"

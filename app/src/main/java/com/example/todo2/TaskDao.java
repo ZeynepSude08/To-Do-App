@@ -7,14 +7,14 @@ import androidx.room.Update;
 import androidx.room.Delete;
 
 import java.util.List;
+
 @Dao
 public interface TaskDao {
-
     @Insert
     long insert(Task task);
 
     @Query("SELECT * FROM tasks")
-    List<Task>  getAllTasks();
+    List<Task> getAllTasks();
 
     @Update
     void update(Task task);
@@ -24,5 +24,4 @@ public interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     Task getTaskById(int taskId);
-
 }

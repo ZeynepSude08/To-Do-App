@@ -1,6 +1,5 @@
 package com.example.todo2;
 
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -8,22 +7,9 @@ import androidx.room.PrimaryKey;
 public class Task {
     @PrimaryKey(autoGenerate = true)
     private int id;
-
-    @ColumnInfo(name = "title")
     private String title;
-
-    @ColumnInfo(name = "completed")
     private boolean completed;
-
-
-    public Task(){
-
-    }
-    // Constructor
-    public Task(String title, boolean completed) {
-        this.title = title;
-        this.completed = completed;
-    }
+    private String description;
 
     // Getters and setters
     public int getId() {
@@ -42,11 +28,20 @@ public class Task {
         this.title = title;
     }
 
-    public boolean isCompleted() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isCompleted() { // Getter for completed
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setCompleted(boolean completed) { // Setter for completed
         this.completed = completed;
     }
 }
+
